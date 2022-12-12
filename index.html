@@ -1,0 +1,86 @@
+<html>
+	<head>
+		<meta name="viewport" content="width=device-width,initial-scale=1" />
+	</head>
+<style>
+/* dark mode */
+@media screen and (prefers-color-scheme: dark) {
+	body {
+	  background-color: black;
+	  color: 999;
+	}
+	.h {
+	    background-color: #999;
+	    color: black;
+	}
+}
+/* normal / light mode */
+body {
+    background-color: white;
+    color: black;
+}
+.h {
+	background-color: #777;
+	color: white;
+}
+
+/* layout */
+
+.container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 5px;
+}
+.val {
+  grid-column-start: 1;
+  grid-column-end: 3;
+  text-align: center;
+}
+span {
+	font-weight: bold;
+}
+
+</style>
+	<script>
+		function calc() {
+			capa=parseInt(document.getElementById("capa").innerHTML);
+			cons=parseInt(document.getElementById("cons").innerHTML);
+			soc=parseInt(document.getElementById("soc").innerHTML);
+			document.getElementById("range").innerHTML=parseInt(10*capa*soc/cons);
+
+		}
+		function down(what,amount) {
+			console.log("down",what,amount);
+			value=parseInt(document.getElementById(what).innerHTML);
+			value=value+amount;
+			document.getElementById(what).innerHTML=value;
+			calc();
+		}
+		function up(what) {
+			console.log("up",what);
+		}
+
+	</script>
+	<body>
+		<div class="container">
+			<div class="h val">foo</div>
+
+			<div class="val">Battery Net Capacity <span id="capa">55</span> kWh</div>
+			<button onpointerup="up('capa')" onpointerdown="down('capa',-1)">-</button>
+			<button onpointerdown="down('capa',1)">+</button>
+
+			<div class="val">Consumption <span id="cons">150</span> Wh/km</div>
+			<button onpointerdown="down('cons',-1)">-</button>
+			<button onpointerdown="down('cons',1)">+</button>
+
+			<div class="val">State of Charge <span id="soc">40</span> %</div>
+			<button onpointerdown="down('soc',-1)">-</button>
+			<button onpointerdown="down('soc',1)">+</button>
+
+			<div class="val">Range <span id="range"></span> km</div>
+		</div>
+	<script>
+		calc()
+	</script>
+	</body>
+</html>
