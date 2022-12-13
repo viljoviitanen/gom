@@ -1,87 +1,185 @@
+<!DOCTYPE html>
+<!--
+    Simple Mobile UI Range Calculator for Electric Vehicles
+
+    Copyright (C) 2022  Viljo Viitanen
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+-->
 <html>
-	<head>
-		<meta name="viewport" content="width=device-width,initial-scale=1" />
-	</head>
-<style>
-/* normal / light mode */
-body {
-    background-color: white;
-    color: black;
-}
-.h {
-	background-color: #777;
-	color: white;
-}
 
-/* dark mode */
-@media (prefers-color-scheme: dark) {
-	body {
-	  background-color: black;
-	  color: 999;
-	}
-	.h {
-	    background-color: #999;
-	    color: black;
-	}
-}
+<head>
+	<meta name="viewport" content="width=device-width,height=device-height,initial-scale=1">
 
-/* layout */
-
-.container {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 5px;
-}
-.val {
-  grid-column-start: 1;
-  grid-column-end: 3;
-  text-align: center;
-}
-span {
-	font-weight: bold;
-}
-
-</style>
-	<script>
-		function calc() {
-			capa=parseInt(document.getElementById("capa").innerHTML);
-			cons=parseInt(document.getElementById("cons").innerHTML);
-			soc=parseInt(document.getElementById("soc").innerHTML);
-			document.getElementById("range").innerHTML=parseInt(10*capa*soc/cons);
-
-		}
-		function down(what,amount) {
-			console.log("down",what,amount);
-			value=parseInt(document.getElementById(what).innerHTML);
-			value=value+amount;
-			document.getElementById(what).innerHTML=value;
-			calc();
-		}
-		function up(what) {
-			console.log("up",what);
+	<style>
+		/* normal / light mode */
+		html {
+			height: 100%;
+			font-size: 18px;
 		}
 
-	</script>
-	<body>
+		body {
+			background-color: white;
+			color: black;
+			height: 100%;
+		}
+
+		input {
+			font-size: 18px;
+		}
+
+		.h {
+			background-color: #777;
+			color: white;
+		}
+
+		button {
+			min-height: 50px;
+		}
+
+		span {
+			font-weight: bolder;
+		}
+
+		/* dark mode overrides */
+		@media (prefers-color-scheme: dark) {
+			body {
+				background-color: black;
+				color: #999;
+			}
+
+			.h {
+				background-color: #999;
+				color: black;
+			}
+		}
+
+		/* layout */
+		.center {
+			display: flex;
+			align-items: center;
+			height: 100%;
+			width: 100%;
+		}
+
+		.container {
+			width: 100%;
+			display: grid;
+			grid-template-columns: 1fr 1fr;
+			gap: 10px;
+			row-gap: 15px;
+		}
+
+		.val {
+			grid-column-start: 1;
+			grid-column-end: 3;
+			text-align: center;
+		}
+	</style>
+</head>
+
+<body>
+	<div class="center">
 		<div class="container">
-			<div class="h val">foo</div>
+			<div class="h val">Guess-o-Meter / Simple Range Calculator</div>
+			<div class="val">Battery Net Capacity <input onchange="calc()" id="capa" size="3" type="number"
+					inputmode="numeric" min="1" max="999"> kWh</div>
+			<button data-type="capa" data-value="-1">-</button>
+			<button data-type="capa" data-value="1">+</button>
 
-			<div class="val">Battery Net Capacity <span id="capa">55</span> kWh</div>
-			<button onpointerup="up('capa')" onpointerdown="down('capa',-1)">-</button>
-			<button onpointerdown="down('capa',1)">+</button>
+			<div class="val">Consumption <input onchange="calc()" id="cons" size="3" type="number" inputmode="numeric"
+					min="1" max="999">
+				Wh/km
+			</div>
+			<button data-type="cons" data-value="-1">-</button>
+			<button data-type="cons" data-value="1">+</button>
 
-			<div class="val">Consumption <span id="cons">150</span> Wh/km</div>
-			<button onpointerdown="down('cons',-1)">-</button>
-			<button onpointerdown="down('cons',1)">+</button>
-
-			<div class="val">State of Charge <span id="soc">40</span> %</div>
-			<button onpointerdown="down('soc',-1)">-</button>
-			<button onpointerdown="down('soc',1)">+</button>
+			<div class="val">State of Charge <input onchange="calc()" id="soc" size="3" type="number"
+					inputmode="numeric" min="1" max="100">
+				%
+			</div>
+			<button data-type="soc" data-value="-1">-</button>
+			<button data-type="soc" data-value="1">+</button>
 
 			<div class="val">Range <span id="range"></span> km</div>
+			<div class="val">---</div>
+			<div class="val"><a href="https://github.com/viljoviitanen/gom">github.com/viljoviitanen/gom</a></div>
 		</div>
+	</div>
 	<script>
-		calc()
+		var interval_ids = [];
+		function calc() {
+			capa = parseInt(document.getElementById("capa").value);
+			cons = parseInt(document.getElementById("cons").value);
+			soc = parseInt(document.getElementById("soc").value);
+			// store values in localstorage so they are preserved on reload
+			localStorage.setItem('capa', capa);
+			localStorage.setItem('cons', cons);
+			localStorage.setItem('soc', soc);
+			document.getElementById("range").innerHTML = parseInt(10 * capa * soc / cons);
+		}
+		function down(event) {
+			//console.log("down", event);
+			// something was touched. Let's see if we're interested, buttons have data-value set.
+			target = event.target;
+			if (target.dataset.value) {
+				event.preventDefault(); // try to keep things like zooming happening with multiple clicks
+				el = document.getElementById(target.dataset.type)
+				value = parseInt(el.value);
+				value += parseInt(target.dataset.value);
+				if (value > el.max) {
+					value = el.max;
+				}
+				if (value < el.min) {
+					value = el.min;
+				}
+				el.value = value;
+				interval_ids.push(setInterval((ele, typ, val) => {
+					// when button is held down, increment value to next 10 every 0.5sec
+					//console.log(ele, typ, val);
+					value = parseInt(el.value);
+					value += 10 * parseInt(target.dataset.value);
+					value = 10 * Math.round(value / 10);
+					if (value > el.max) {
+						value = el.max;
+					}
+					if (value < el.min) {
+						value = el.min;
+					}
+					el.value = value;
+					calc();
+				}, 500, el, target.dataset.type, target.dataset.value))
+				calc();
+			}
+		}
+		function up(ev) {
+			//console.log("up", ev);
+			interval_ids.forEach(element => {
+				// cancel all intervals, in case there are many.
+				clearInterval(element);
+			});
+		}
+		// listen on all pointerup and down events, handler checks if we're interested.
+		document.body.onpointerup = up;
+		document.body.onpointerdown = down;
+		// initialize values from localStorage, or set defaults
+		document.getElementById("capa").value = localStorage.getItem("capa") || 60;
+		document.getElementById("cons").value = localStorage.getItem("cons") || 170;
+		document.getElementById("soc").value = localStorage.getItem("soc") || 40;
+		// calculate initial range
+		calc();
 	</script>
-	</body>
+</body>
+
 </html>
