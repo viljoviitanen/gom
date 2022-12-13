@@ -20,6 +20,7 @@
 <html>
 
 <head>
+	<title>Guess-o-Meter / Simple Range Calculator</title>
 	<meta name="viewport" content="width=device-width,height=device-height,initial-scale=1">
 
 	<style>
@@ -93,20 +94,20 @@
 	<div class="center">
 		<div class="container">
 			<div class="h val">Guess-o-Meter / Simple Range Calculator</div>
-			<div class="val">Battery Net Capacity <input onchange="calc()" id="capa" size="3" type="number"
-					inputmode="numeric" min="1" max="999"> kWh</div>
+			<div class="val">Battery Net Capacity <input onchange="calc()" id="capa" type="number" inputmode="numeric"
+					min="1" max="999"> kWh</div>
 			<button data-type="capa" data-value="-1">-</button>
 			<button data-type="capa" data-value="1">+</button>
 
-			<div class="val">Consumption <input onchange="calc()" id="cons" size="3" type="number" inputmode="numeric"
-					min="1" max="999">
+			<div class="val">Consumption <input onchange="calc()" id="cons" type="number" inputmode="numeric" min="1"
+					max="999">
 				Wh/km
 			</div>
 			<button data-type="cons" data-value="-1">-</button>
 			<button data-type="cons" data-value="1">+</button>
 
-			<div class="val">State of Charge <input onchange="calc()" id="soc" size="3" type="number"
-					inputmode="numeric" min="1" max="100">
+			<div class="val">State of Charge <input onchange="calc()" id="soc" type="number" inputmode="numeric" min="1"
+					max="100">
 				%
 			</div>
 			<button data-type="soc" data-value="-1">-</button>
