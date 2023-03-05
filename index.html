@@ -17,10 +17,11 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 -->
-<html>
+<html lang="en">
 
 <head>
 	<title>Guess-o-Meter / Simple Range Calculator</title>
+	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width,height=device-height,initial-scale=1">
 
 	<style>
@@ -34,6 +35,10 @@
 			background-color: white;
 			color: black;
 			height: 100%;
+			-moz-user-select:none;
+			-ms-user-select:none;
+			-webkit-user-select:none;
+			user-select: none;
 		}
 
 		input {
@@ -94,28 +99,28 @@
 	<div class="center">
 		<div class="container">
 			<div class="h val">Guess-o-Meter / Simple Range Calculator</div>
-			<div class="val">Battery Net Capacity <input onchange="calc()" id="capa" type="number" inputmode="numeric"
-					min="1" max="999"> kWh</div>
+			<div class="val"><label>Battery Net Capacity
+					<input onchange="calc()" id="capa" type="number" inputmode="numeric"
+					min="1" max="999" title="Battery net capacity"></label> kWh</div>
 			<button data-type="capa" data-value="-1">-</button>
 			<button data-type="capa" data-value="1">+</button>
 
-			<div class="val">Consumption <input onchange="calc()" id="cons" type="number" inputmode="numeric" min="1"
-					max="999">
-				Wh/km
+			<div class="val"><label>Consumption
+					<input onchange="calc()" id="cons" type="number" inputmode="numeric" min="1" max="999"></label> Wh/km
 			</div>
 			<button data-type="cons" data-value="-1">-</button>
 			<button data-type="cons" data-value="1">+</button>
 
-			<div class="val">State of Charge <input onchange="calc()" id="soc" type="number" inputmode="numeric" min="1"
-					max="100">
-				%
+			<div class="val"><label>State of Charge
+					<input onchange="calc()" id="soc" type="number" inputmode="numeric" min="1" max="100"></label> %
 			</div>
 			<button data-type="soc" data-value="-1">-</button>
 			<button data-type="soc" data-value="1">+</button>
 
 			<div class="val">Range <span id="range"></span> km</div>
 			<div class="val">---</div>
-			<div class="val"><a href="https://github.com/viljoviitanen/gom">github.com/viljoviitanen/gom</a></div>
+			<div class="val">Source <a href="https://github.com/viljoviitanen/gom">github.com/viljoviitanen/gom</a> - 
+			to set dark mode, use device settings</div>
 		</div>
 	</div>
 	<script>
@@ -137,7 +142,7 @@
 			if (target.dataset.value) {
 				event.preventDefault(); // try to keep things like zooming happening with multiple clicks
 				el = document.getElementById(target.dataset.type)
-				value = parseInt(el.value);
+				value = parseInt(el.value) || 0;
 				value += parseInt(target.dataset.value);
 				if (value > el.max) {
 					value = el.max;
@@ -149,7 +154,7 @@
 				interval_ids.push(setInterval((ele, typ, val) => {
 					// when button is held down, increment value to next 10 every 0.5sec
 					//console.log(ele, typ, val);
-					value = parseInt(el.value);
+					value = parseInt(el.value) || 0;
 					value += 10 * parseInt(target.dataset.value);
 					value = 10 * Math.round(value / 10);
 					if (value > el.max) {
@@ -164,20 +169,23 @@
 				calc();
 			}
 		}
-		function up(ev) {
-			//console.log("up", ev);
+		function cancel(ev) {
+			//console.log("cancel", ev);
 			interval_ids.forEach(element => {
 				// cancel all intervals, in case there are many.
 				clearInterval(element);
 			});
 		}
 		// listen on all pointerup and down events, handler checks if we're interested.
-		document.body.onpointerup = up;
+		document.body.onpointerup = cancel;
 		document.body.onpointerdown = down;
+		document.body.oncontextmenu = function(){return false;};
+		// need to check if pointer leaves button areas, otherwise they can get "stuck"
+		Array.from(document.getElementsByTagName("button")).forEach(b => b.onpointerleave = cancel)
 		// initialize values from localStorage, or set defaults
 		document.getElementById("capa").value = localStorage.getItem("capa") || 60;
 		document.getElementById("cons").value = localStorage.getItem("cons") || 170;
-		document.getElementById("soc").value = localStorage.getItem("soc") || 40;
+		document.getElementById("soc").value = localStorage.getItem("soc") || 80;
 		// calculate initial range
 		calc();
 	</script>
